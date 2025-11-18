@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explora nuestros productos de moda en vista de tabla - FashionHub">
+    <title>Productos en Tabla - FashionHub</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos específicos para las imágenes en la tabla */
+        .product-img-table {
+            width: 80px;
+            height: 80px;
+            background: #f8fafc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .product-img-table img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        
+        /* Asegurar que la tabla sea responsive */
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .products-table {
+            width: 100%;
+            min-width: 800px;
+            border-collapse: collapse;
+        }
+        
+        .products-table th,
+        .products-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+        
+        .products-table thead th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .products-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        
+        .products-table tbody tr:hover {
+            background: #f9fafb;
+        }
+        
+        /* Ajustar el ancho de las columnas */
+        .products-table th:first-child,
+        .products-table td:first-child {
+            width: 100px;
+            text-align: center;
+        }
+        
+        .products-table th:nth-child(2),
+        .products-table td:nth-child(2) {
+            min-width: 200px;
+        }
+        
+        .products-table th:nth-child(3),
+        .products-table td:nth-child(3) {
+            width: 120px;
+        }
+        
+        .products-table th:nth-child(4),
+        .products-table td:nth-child(4) {
+            width: 150px;
+        }
+        
+        .products-table th:nth-child(5),
+        .products-table td:nth-child(5) {
+            width: 140px;
+        }
+        
+        .products-table th:last-child,
+        .products-table td:last-child {
+            width: 120px;
+            text-align: center;
+        }
+        
+        /* Estilos para ordenamiento - CORREGIDO */
+        .sortable {
+            cursor: pointer;
+            -webkit-user-select: none; /* Soporte para Safari y iOS */
+            user-select: none; /* Soporte estándar */
+            position: relative;
+            padding-right: 20px;
+        }
+        
+        .sortable:hover {
+            background: #f1f5f9;
+        }
+        
+        .sortable i {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+        
+        .sortable.active i {
+            color: #3b82f6;
+        }
+        
+        /* Botones de acción */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        
+        .view-btn {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+        
+        .view-btn:hover {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .add-btn {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+        
+        .add-btn:hover {
+            background: #10b981;
+            color: white;
+        }
+        
+        /* Información del producto en tabla */
+        .product-category {
+            color: #6b7280;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+        
+        .product-price .current-price {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .product-price .original-price {
+            text-decoration: line-through;
+            color: #9ca3af;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+        
+        /* Export options */
+        .export-options {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .export-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+        
+        .export-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+        }
+        
+        .page-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        /* Estilos para notificaciones y modales */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-left: 4px solid #10b981;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 10000;
+            max-width: 300px;
+        }
+        
+        .notification.active {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            border-left-color: #ef4444;
+        }
+        
+        .notification.info {
+            border-left-color: #3b82f6;
+        }
+        
+        .close-notification {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: 10px;
+            color: #6b7280;
+        }
+        
+        @media (max-width: 768px) {
+            .page-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .export-options {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="mainHeader">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <img src="Imagenes_pagina_web/Logo_mejor.png" alt="FashionHub Logo" class="logo-img">
+                </a>
+                
+                <nav>
+                    <button class="mobile-menu-btn" aria-label="Abrir menú de navegación">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <ul class="nav-links">
+                        <li><a href="index.html">Inicio</a></li>
+                        <li><a href="listado_tabla.html" class="active">Productos (Tabla)</a></li>
+                        <li><a href="listado_box.html">Productos (Box)</a></li>
+                        <li><a href="comprar.html">Comprar</a></li>
+                    </ul>
+                    
+                    <div class="nav-icons">
+                        <a href="buscar.html" aria-label="Buscar productos" title="Buscar productos"><i class="fas fa-search"></i></a>
+                        <a href="carrito.html" aria-label="Ver carrito de compras" title="Carrito de compras"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
+                        <a href="cuenta.html" aria-label="Iniciar sesión o ver cuenta" title="Mi cuenta"><i class="fas fa-user"></i></a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <nav aria-label="Migas de pan" class="breadcrumb">
+            <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Productos (Tabla)</span>
+        </nav>
+        
+        <div class="page-header">
+            <h1 class="page-title">Nuestros Productos</h1>
+            
+            <div class="view-options">
+                <span class="results-count">Mostrando 8 de 42 productos</span>
+                <div class="view-toggle">
+                    <a href="listado_tabla.html" class="active" title="Ver productos en tabla"><i class="fas fa-table"></i></a>
+                    <a href="listado_box.html" title="Ver productos en cajas"><i class="fas fa-th"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <section class="filters-section">
+            <div class="filters-header">
+                <div class="filters-title">
+                    <i class="fas fa-filter"></i> Filtros
+                </div>
+                <a href="#" class="clear-filters">Limpiar filtros</a>
+            </div>
+            
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="category">Categoría</label>
+                    <select id="category">
+                        <option value="">Todas las categorías</option>
+                        <option value="camisetas">Camisetas</option>
+                        <option value="pantalones">Pantalones</option>
+                        <option value="chaquetas">Chaquetas</option>
+                        <option value="calzado">Calzado</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="price">Precio</label>
+                    <select id="price">
+                        <option value="">Todos los precios</option>
+                        <option value="0-50">Hasta $50.000</option>
+                        <option value="50-100">$50.000 - $100.000</option>
+                        <option value="100-150">$100.000 - $150.000</option>
+                        <option value="150+">Más de $150.000</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="size">Talla</label>
+                    <select id="size">
+                        <option value="">Todas las tallas</option>
+                        <option value="s">S</option>
+                        <option value="m">M</option>
+                        <option value="l">L</option>
+                        <option value="xl">XL</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="availability">Disponibilidad</label>
+                    <select id="availability">
+                        <option value="">Todas</option>
+                        <option value="instock">En stock</option>
+                        <option value="lowstock">Últimas unidades</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+        
+        <section class="table-container" aria-label="Lista de productos en tabla">
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th class="sortable" data-sort="image">
+                            Imagen <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable active" data-sort="name">
+                            Producto <i class="fas fa-sort-up"></i>
+                        </th>
+                        <th class="sortable" data-sort="category">
+                            Categoría <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="price">
+                            Precio <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="availability">
+                            Disponibilidad <i class="fas fa-sort"></i>
+                        </th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Producto 1: Camiseta Básica Algodón Hombre -->
+                    <tr data-id="prod-1" data-product='{
+                        "id": "prod-1",
+                        "name": "Camiseta Básica Algodón Hombre",
+                        "price": 29900,
+                        "category": "camisetas",
+                        "description": "Camiseta básica de algodón 100% para hombre. Corte clásico, cómoda y versátil. Ideal para uso diario.",
+                        "features": ["100% Algodón", "Corte clásico", "Multiple colores"],
+                        "sizes": ["S", "M", "L", "XL"],
+                        "colors": ["Blanco", "Negro", "Gris", "Azul marino"]
+                    }'>
+                        <td>
+                            <div class="product-img-table">
+                                <img src="Imagenes_pagina_web/camiseta basica algodon hombre.png" alt="Camiseta Básica Algodón Hombre">
+                            </div>
+                        </td>
+                        <td>
+                            <span class="product-name">Camiseta Básica Algodón Hombre</span>
+                            <div class="product-category">Ref: FH-CAM-001</div>
+                        </td>
+                        <td>Camisetas</td>
+                        <td class="product-price">
+                            <span class="current-price">$29.900</span>
+                            <span class="original-price">$39.900</span>
+                        </td>
+                        <td><span class="product-status status-instock">En stock</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn view-details-btn" data-product-id="prod-1" aria-label="Ver detalles del producto" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn add-btn" aria-label="Añadir al carrito" title="Añadir al carrito"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Producto 2: Chaqueta de Cuero Sintético Mujer -->
+                    <tr data-id="prod-2" data-product='{
+                        "id": "prod-2",
+                        "name": "Chaqueta de Cuero Sintético Mujer",
+                        "price": 159900,
+                        "category": "chaquetas",
+                        "description": "Chaqueta de cuero sintético de alta calidad para mujer. Diseño moderno y elegante, perfecta para looks casuales y formales.",
+                        "features": ["Cuero sintético premium", "Forro interior suave", "Cierre frontal con cremallera"],
+                        "sizes": ["XS", "S", "M", "L"],
+                        "colors": ["Negro", "Marrón", "Burdeos"]
+                    }'>
+                        <td>
+                            <div class="product-img-table">
+                                <img src="Imagenes_pagina_web/chaqueta de cuero sintético mujer.webp" alt="Chaqueta de Cuero Sintético Mujer">
+                            </div>
+                        </td>
+                        <td>
+                            <span class="product-name">Chaqueta de Cuero Sintético Mujer</span>
+                            <div class="product-category">Ref: FH-CHQ-005</div>
+                        </td>
+                        <td>Chaquetas</td>
+                        <td class="product-price">
+                            <span class="current-price">$159.900</span>
+                            <span class="original-price">$199.900</span>
+                        </td>
+                        <td><span class="product-status status-instock">En stock</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn view-details-btn" data-product-id="prod-2" aria-label="Ver detalles del producto" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn add-btn" aria-label="Añadir al carrito" title="Añadir al carrito"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Producto 3: Zapatos Casuales Hombre -->
+                    <tr data-id="prod-3" data-product='{
+                        "id": "prod-3",
+                        "name": "Zapatos Casuales Hombre",
+                        "price": 89900,
+                        "category": "calzado",
+                        "description": "Zapatos casuales para hombre fabricados en cuero genuino. Ideales para uso diario y ocasiones informales.",
+                        "features": ["Cuero genuino", "Suela de goma antideslizante", "Plantilla acolchada"],
+                        "sizes": ["40", "41", "42", "43", "44"],
+                        "colors": ["Negro", "Marrón", "Azul"]
+                    }'>
+                        <td>
+                            <div class="product-img-table">
+                                <img src="Imagenes_pagina_web/zapatos casuales hombre.jpg" alt="Zapatos Casuales Hombre">
+                            </div>
+                        </td>
+                        <td>
+                            <span class="product-name">Zapatos Casuales Hombre</span>
+                            <div class="product-category">Ref: FH-ZAP-012</div>
+                        </td>
+                        <td>Calzado</td>
+                        <td class="product-price">$89.900</td>
+                        <td><span class="product-status status-lowstock">Últimas unidades</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn view-details-btn" data-product-id="prod-3" aria-label="Ver detalles del producto" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn add-btn" aria-label="Añadir al carrito" title="Añadir al carrito"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Producto 4: Polo Clásico Mujer -->
+                    <tr data-id="prod-4" data-product='{
+                        "id": "prod-4",
+                        "name": "Polo Clásico Mujer",
+                        "price": 45900,
+                        "category": "camisetas",
+                        "description": "Polo clásico para mujer en piqué de algodón. Diseño elegante y cómodo para cualquier ocasión.",
+                        "features": ["Algodón piqué", "Corte clásico", "Cuello y puños acanalados"],
+                        "sizes": ["XS", "S", "M", "L", "XL"],
+                        "colors": ["Blanco", "Negro", "Azul marino", "Rojo"]
+                    }'>
+                        <td>
+                            <div class="product-img-table">
+                                <img src="Imagenes_pagina_web/polo classic mujer.png" alt="Polo Clásico Mujer">
+                            </div>
+                        </td>
+                        <td>
+                            <span class="product-name">Polo Clásico Mujer</span>
+                            <div class="product-category">Ref: FH-POL-008</div>
+                        </td>
+                        <td>Camisetas</td>
+                        <td class="product-price">$45.900</td>
+                        <td><span class="product-status status-instock">En stock</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn view-details-btn" data-product-id="prod-4" aria-label="Ver detalles del producto" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn add-btn" aria-label="Añadir al carrito" title="Añadir al carrito"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Producto 5: Chaqueta de Cuero Sintético Hombre -->
+                    <tr data-id="prod-5" data-product='{
+                        "id": "prod-5",
+                        "name": "Chaqueta de Cuero Sintético Hombre",
+                        "price": 149900,
+                        "category": "chaquetas",
+                        "description": "Chaqueta de cuero sintético para hombre con diseño moderno y resistente.",
+                        "features": ["Cuero sintético premium", "Forro interior", "Bolsillos funcionales"],
+                        "sizes": ["S", "M", "L", "XL"],
+                        "colors": ["Negro", "Marrón", "Verde militar"]
+                    }'>
+                        <td>
+                            <div class="product-img-table">
+                                <img src="Imagenes_pagina_web/chaqueta de cuero sintético hombre.webp" alt="Chaqueta de Cuero Sintético Hombre">
+                            </div>
+                        </td>
+                        <td>
+                            <span class="product-name">Chaqueta de Cuero Sintético Hombre</span>
+                            <div class="product-category">Ref: FH-CHQ-023</div>
+                        </td>
+                        <td>Chaquetas</td>
+                        <td class="product-price">$149.900</td>
+                        <td><span class="product-status status-instock">En stock</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn view-details-btn" data-product-id="prod-5" aria-label="Ver detalles del producto" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn add-btn" aria-label="Añadir al carrito" title="Añadir al carrito"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Producto 6: Camiseta Básica Algodón Mujer -->
+                    <tr data-id="prod-6" data-product='{
+                        "id": "prod-6",
+                        "name": "Camiseta Básica Algodón Mujer",
+                        "price": 32900,
+                        "category": "camisetas",
+                        "description": "Camiseta básica de algodón 100% para mujer. Corte femenino y cómodo para uso diario.",
+                        "features": ["100% Algodón", "Corte femenino", "Multiple colores"],
+                        "sizes": ["XS", "S", "M", "L"],
+                        "colors": ["Blanco", "Negro", "Rosa", "Azul claro"]
+                    }'>
+                        <td>
+                            <div class="product-img-table">
+                                <img src="Imagenes_pagina_web/camiseta basica algodon mujer.png" alt="Camiseta Básica Algodón Mujer">
+                            </div>
+                        </td>
+                        <td>
+                            <span class="product-name">Camiseta Básica Algodón Mujer</span>
+                            <div class="product-category">Ref: FH-CAM-030</div>
+                        </td>
+                        <td>Camisetas</td>
+                        <td class="product-price">$32.900</td>
+                        <td><span class="product-status status-instock">En stock</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn view-details-btn" data-product-id="prod-6" aria-label="Ver detalles del producto" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn add-btn" aria-label="Añadir al carrito" title="Añadir al carrito"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Producto 7: Zapatos Casuales Mujer -->
+                    <tr data-id="prod-7" data-product='{
+                        "id": "prod-7",
+                        "name": "Zapatos Casuales Mujer",
+                        "price": 94900,
+                        "category": "calzado",
+                        "description": "Zapatos casuales para mujer con diseño elegante y cómodo para todo el día.",
+                        "features": ["Cuero genuino", "Suela flexible", "Plantilla ergonómica"],
+                        "sizes": ["36", "37", "38", "39", "40"],
+                        "colors": ["Negro", "Beige", "Rojo", "Azul marino"]
+                    }'>
+                        <td>
+                            <div class="product-img-table">
+                                <img src="Imagenes_pagina_web/zapatos casuales mujer.jpg" alt="Zapatos Casuales Mujer">
+                            </div>
+                        </td>
+                        <td>
+                            <span class="product-name">Zapatos Casuales Mujer</span>
+                            <div class="product-category">Ref: FH-ZAP-042</div>
+                        </td>
+                        <td>Calzado</td>
+                        <td class="product-price">$94.900</td>
+                        <td><span class="product-status status-instock">En stock</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn view-details-btn" data-product-id="prod-7" aria-label="Ver detalles del producto" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn add-btn" aria-label="Añadir al carrito" title="Añadir al carrito"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Producto 8: Camiseta Estampada Hombre -->
+                    <tr data-id="prod-8" data-product='{
+                        "id": "prod-8",
+                        "name": "Camiseta Estampada Hombre",
+                        "price": 34900,
+                        "category": "camisetas",
+                        "description": "Camiseta con diseño moderno y estampado exclusivo para hombre.",
+                        "features": ["Algodón premium", "Estampado exclusivo", "Corte moderno"],
+                        "sizes": ["S", "M", "L", "XL"],
+                        "colors": ["Negro", "Blanco", "Gris", "Verde"]
+                    }'>
+                        <td>
+                            <div class="product-img-table">
+                                <img src="Imagenes_pagina_web/camiseta basica algodon hombre.png" alt="Camiseta Estampada Hombre">
+                            </div>
+                        </td>
+                        <td>
+                            <span class="product-name">Camiseta Estampada Hombre</span>
+                            <div class="product-category">Ref: FH-CAM-015</div>
+                        </td>
+                        <td>Camisetas</td>
+                        <td class="product-price">$34.900</td>
+                        <td><span class="product-status status-instock">En stock</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn view-details-btn" data-product-id="prod-8" aria-label="Ver detalles del producto" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn add-btn" aria-label="Añadir al carrito" title="Añadir al carrito"><i class="fas fa-cart-plus"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <nav aria-label="Paginación de productos" class="pagination">
+            <a href="#" class="pagination-item pagination-arrow" aria-label="Página anterior" title="Página anterior"><i class="fas fa-chevron-left"></i></a>
+            <a href="#" class="pagination-item pagination-page active" aria-label="Página 1" title="Página 1">1</a>
+            <a href="#" class="pagination-item pagination-page" aria-label="Página 2" title="Página 2">2</a>
+            <a href="#" class="pagination-item pagination-page" aria-label="Página 3" title="Página 3">3</a>
+            <span class="pagination-item pagination-dots">...</span>
+            <a href="#" class="pagination-item pagination-page" aria-label="Página 5" title="Página 5">5</a>
+            <a href="#" class="pagination-item pagination-arrow" aria-label="Página siguiente" title="Página siguiente"><i class="fas fa-chevron-right"></i></a>
+        </nav>
+        
+        <div class="page-actions">
+            <div class="export-options">
+                <button class="export-btn" title="Exportar a CSV"><i class="fas fa-file-export"></i> Exportar CSV</button>
+                <button class="export-btn" title="Imprimir lista"><i class="fas fa-print"></i> Imprimir</button>
+            </div>
+            
+            <a href="index.html" class="back-btn" title="Volver al inicio"><i class="fas fa-arrow-left"></i> Volver al Inicio</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Acerca de FashionHub</h3>
+                    <p>Tu destino para comprar ropa de calidad con las últimas tendencias de moda y los mejores precios.</p>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Síguenos en Facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Síguenos en Instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Síguenos en Twitter" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Síguenos en Pinterest" title="Pinterest"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Enlaces Rápidos</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Inicio</a></li>
+                        <li><a href="listado_tabla.html">Productos (Tabla)</a></li>
+                        <li><a href="listado_box.html">Productos (Box)</a></li>
+                        <li><a href="comprar.html">Realizar Compra</a></li>
+                        <li><a href="producto.html">Detalle de Producto</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <p><i class="fas fa-envelope"></i> info@fashionhub.com</p>
+                    <p><i class="fas fa-phone"></i> +54 376 412-3456</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Av. Mitre 1234, Posadas, Misiones, Argentina</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 FashionHub. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript mejorado para listado_tabla.html
+        class ListadoTabla {
+            constructor() {
+                this.currentSort = { column: 'name', direction: 'asc' };
+                this.filters = {
+                    category: '',
+                    price: '',
+                    size: '',
+                    availability: ''
+                };
+                this.products = this.loadProducts();
+                this.init();
+            }
+
+            init() {
+                this.initNavigation();
+                this.initTableSorting();
+                this.initFilters();
+                this.initProductInteractions();
+                this.initPagination();
+                this.initExportFunctions();
+                this.initCart();
+            }
+
+            // CARGAR PRODUCTOS DESDE LOS DATOS DEL HTML
+            loadProducts() {
+                const products = {};
+                const productRows = document.querySelectorAll('tr[data-product]');
+                
+                productRows.forEach(row => {
+                    try {
+                        const productData = JSON.parse(row.getAttribute('data-product'));
+                        products[productData.id] = productData;
+                    } catch (e) {
+                        console.error('Error parsing product data:', e);
+                    }
+                });
+                
+                return products;
+            }
+
+            // NAVEGACIÓN
+            initNavigation() {
+                // Menú móvil
+                const mobileBtn = document.querySelector('.mobile-menu-btn');
+                if (mobileBtn) {
+                    mobileBtn.addEventListener('click', () => {
+                        const navLinks = document.querySelector('.nav-links');
+                        navLinks.classList.toggle('mobile-open');
+                        mobileBtn.innerHTML = navLinks.classList.contains('mobile-open') ? 
+                            '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+                    });
+                }
+
+                // Enlaces activos
+                const currentPage = window.location.pathname.split('/').pop() || 'listado_tabla.html';
+                document.querySelectorAll('.nav-links a').forEach(link => {
+                    if (link.getAttribute('href') === currentPage) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            initTableSorting() {
+                const sortableHeaders = document.querySelectorAll('.sortable');
+                
+                sortableHeaders.forEach(header => {
+                    header.addEventListener('click', (e) => {
+                        const column = header.getAttribute('data-sort');
+                        this.sortTable(column, header);
+                    });
+                });
+            }
+
+            sortTable(column, header) {
+                const isActive = header.classList.contains('active');
+                const currentDirection = header.querySelector('.fa-sort-up') ? 'asc' : 'desc';
+                
+                // Remover clases activas de todos los headers
+                document.querySelectorAll('.sortable').forEach(h => {
+                    h.classList.remove('active');
+                    const icon = h.querySelector('i');
+                    if (icon) {
+                        icon.className = 'fas fa-sort';
+                    }
+                });
+                
+                // Añadir clase activa al header clickeado
+                header.classList.add('active');
+                
+                // Determinar nueva dirección
+                let newDirection = 'asc';
+                if (isActive && currentDirection === 'asc') {
+                    newDirection = 'desc';
+                }
+                
+                // Actualizar icono
+                const icon = header.querySelector('i');
+                if (icon) {
+                    icon.className = newDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
+                }
+                
+                this.currentSort = { column, direction: newDirection };
+                this.showNotification(`Tabla ordenada por: ${column} (${newDirection === 'asc' ? 'ascendente' : 'descendente'})`, 'info');
+                
+                // Aquí iría la lógica real de ordenamiento
+                // this.performSorting(column, newDirection);
+            }
+
+            initFilters() {
+                const filterSelects = document.querySelectorAll('select');
+                filterSelects.forEach(select => {
+                    select.addEventListener('change', (e) => {
+                        this.filters[e.target.id] = e.target.value;
+                        this.applyFilters();
+                    });
+                });
+
+                const clearFiltersBtn = document.querySelector('.clear-filters');
+                if (clearFiltersBtn) {
+                    clearFiltersBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.clearFilters();
+                    });
+                }
+            }
+
+            initProductInteractions() {
+                // Botones Ver Detalles
+                const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
+                viewDetailsButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const productId = button.getAttribute('data-product-id');
+                        this.viewProductDetails(productId);
+                    });
+                });
+
+                // Botones de añadir al carrito
+                const addToCartButtons = document.querySelectorAll('.action-btn.add-btn');
+                addToCartButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.addToCart(button);
+                    });
+                });
+            }
+
+            // MÉTODO PARA VER DETALLES DEL PRODUCTO
+            viewProductDetails(productId) {
+                const productData = this.products[productId];
+                
+                if (!productData) {
+                    this.showNotification('Producto no encontrado', 'error');
+                    return;
+                }
+
+                // Guardar el producto seleccionado en localStorage
+                localStorage.setItem('selectedProduct', JSON.stringify(productData));
+                
+                // Redirigir a la página de detalles del producto
+                window.location.href = `producto.html?id=${productId}`;
+            }
+
+            addToCart(button) {
+                const productRow = button.closest('tr');
+                if (!productRow) return;
+
+                const productId = productRow.dataset.id;
+                const productData = this.products[productId];
+                
+                if (!productData) return;
+
+                let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+                const existingItem = cartItems.find(item => item.id === productId);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cartItems.push({
+                        id: productData.id,
+                        name: productData.name,
+                        price: productData.price,
+                        quantity: 1,
+                        image: productRow.querySelector('.product-img-table img')?.src || ''
+                    });
+                }
+
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                this.updateCartCount();
+                this.showNotification(`✓ ${productData.name} añadido al carrito`, 'success');
+            }
+
+            initPagination() {
+                const paginationItems = document.querySelectorAll('.pagination-item:not(.pagination-dots)');
+                paginationItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (!item.classList.contains('active')) {
+                            paginationItems.forEach(i => i.classList.remove('active'));
+                            item.classList.add('active');
+                            this.showNotification('Cambiando de página...', 'info');
+                        }
+                    });
+                });
+            }
+
+            initExportFunctions() {
+                const exportCSVBtn = document.querySelector('.export-btn .fa-file-export')?.closest('.export-btn');
+                const printBtn = document.querySelector('.export-btn .fa-print')?.closest('.export-btn');
+                
+                if (exportCSVBtn) {
+                    exportCSVBtn.addEventListener('click', () => {
+                        this.exportToCSV();
+                    });
+                }
+                
+                if (printBtn) {
+                    printBtn.addEventListener('click', () => {
+                        this.printPage();
+                    });
+                }
+            }
+
+            initCart() {
+                this.updateCartCount();
+            }
+
+            applyFilters() {
+                let activeFilters = Object.values(this.filters).filter(value => value !== '');
+                if (activeFilters.length > 0) {
+                    this.showNotification('Filtros aplicados correctamente', 'success');
+                    // Aquí iría la lógica real de filtrado
+                }
+            }
+
+            clearFilters() {
+                const filterSelects = document.querySelectorAll('select');
+                filterSelects.forEach(select => {
+                    select.value = '';
+                    this.filters[select.id] = '';
+                });
+                
+                this.showNotification('Filtros limpiados', 'info');
+            }
+
+            updateCartCount() {
+                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+                const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+                const cartCount = document.querySelector('.cart-count');
+                
+                if (cartCount) {
+                    cartCount.textContent = totalItems;
+                }
+            }
+
+            exportToCSV() {
+                this.showNotification('Generando archivo CSV...', 'info');
+                // Simular proceso de exportación
+                setTimeout(() => {
+                    this.showNotification('Archivo CSV descargado exitosamente', 'success');
+                }, 1500);
+            }
+
+            printPage() {
+                window.print();
+            }
+
+            parsePrice(priceString) {
+                return parseInt(priceString.replace(/[^\d]/g, '')) || 0;
+            }
+
+            showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <span>${message}</span>
+                    <button class="close-notification">&times;</button>
+                `;
+                
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.classList.add('active');
+                }, 10);
+
+                notification.querySelector('.close-notification').addEventListener('click', () => {
+                    notification.remove();
+                });
+
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.classList.remove('active');
+                        setTimeout(() => {
+                            if (notification.parentNode) {
+                                notification.remove();
+                            }
+                        }, 300);
+                    }
+                }, 4000);
+            }
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            window.listadoTabla = new ListadoTabla();
+        });
+    </script>
+</body>
+</html>
